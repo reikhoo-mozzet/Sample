@@ -5,5 +5,5 @@ package com.mozzet.sample.model;
  */
 
 public abstract class BaseModel {
-    public abstract void getType();
+    public abstract int getType();
 }
