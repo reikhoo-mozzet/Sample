@@ -10,9 +10,8 @@ import java.io.IOException;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import okhttp3.Call;
-import okhttp3.Callback;
+import io.reactivex.functions.BiConsumer;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -43,37 +42,25 @@ public class NetworkModule {
         mClient = new OkHttpClient();
     }
 
-    public void post(String url, FormBody body, Consumer<Single<NetworkResponse>> consumer) {
+    public void post(String url, FormBody body, BiConsumer<Single<NetworkResponse>, Throwable> consumer) {
 
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
                 .build();
-        mClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
+        Single.defer(() -> {
+            Response response = mClient.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new IOException(new IOException("Unexpected code " + response));
             }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    if (!response.isSuccessful()) {
-                        onFailure(call, new IOException("Unexpected code " + response));
-                        return;
-                    }
-                    Single.just(response.body().string())
-                            .subscribeOn(AndroidSchedulers.mainThread())
-                            .map(NetworkModule.this::refineToNetworkResponse)
-                            .map(Single::just)
-                            .subscribe(consumer);
-                } catch (IOException e) {
-                    throw e;
-                } finally {
-                    response.close();
-                }
-            }
-        });
+            String result = response.body().string();
+            response.close();
+            return Single.just(result);
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(NetworkModule.this::refineToNetworkResponse)
+                .map(Single::just)
+                .subscribe(consumer);
     }
 
     private NetworkResponse refineToNetworkResponse(String jsonResponse) {

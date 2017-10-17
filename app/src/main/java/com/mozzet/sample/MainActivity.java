@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.widget.Toast;
 
 import com.mozzet.sample.databinding.ActivityMainBinding;
 import com.mozzet.sample.model.BaseModel;
@@ -56,11 +57,18 @@ public class MainActivity extends Activity {
     private void requestModel() {
         NetworkModule.getInstance()
                 .post(SecretData.SAMPLE_URL, makeFormBody(SecretData.TOKEN_KEY, SecretData.TOKEN)
-                        , singleResponse -> {
+                        , (singleResponse,throwable) -> {
+                            if(throwable!=null){
+                                processNetworkFail(throwable);
+                                return;
+                            }
                             refineToBaseModels(singleResponse, MainActivity.this::setAdapter);
                         });
     }
 
+    private void processNetworkFail(Throwable throwable){
+        Toast.makeText(this, "Error : " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+    }
     private void refineToBaseModels(Single<NetworkResponse> response, Consumer<List<BaseModel>> consumer) {
         response.map(MainActivity.this::refineNetworkResponseToCards)
                 .map(MainActivity.this::refineCardsToTypeAModels)
