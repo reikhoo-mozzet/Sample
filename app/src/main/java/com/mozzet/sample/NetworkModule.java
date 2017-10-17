@@ -17,7 +17,6 @@ import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -58,16 +57,21 @@ public class NetworkModule {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    onFailure(call, new IOException("Unexpected code " + response));
-                    return;
+                try {
+                    if (!response.isSuccessful()) {
+                        onFailure(call, new IOException("Unexpected code " + response));
+                        return;
+                    }
+                    Single.just(response.body().string())
+                            .subscribeOn(AndroidSchedulers.mainThread())
+                            .map(NetworkModule.this::refineToNetworkResponse)
+                            .map(Single::just)
+                            .subscribe(consumer);
+                } catch (IOException e) {
+                    throw e;
+                } finally {
+                    response.close();
                 }
-                Single.just(response.body().string())
-                        .subscribeOn(AndroidSchedulers.mainThread())
-                        .map(NetworkModule.this::refineToNetworkResponse)
-                        .map(Single::just)
-                        .subscribe(consumer);
-
             }
         });
     }
