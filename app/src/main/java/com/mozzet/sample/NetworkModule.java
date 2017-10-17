@@ -51,6 +51,7 @@ public class NetworkModule {
         Single.defer(() -> {
             Response response = mClient.newCall(request).execute();
             if (!response.isSuccessful()) {
+                response.close();
                 throw new IOException(new IOException("Unexpected code " + response));
             }
             String result = response.body().string();
