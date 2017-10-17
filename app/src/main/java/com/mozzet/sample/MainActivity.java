@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 
 import com.mozzet.sample.databinding.ActivityMainBinding;
 import com.mozzet.sample.model.BaseModel;
@@ -27,21 +28,25 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initDataBinding();
+        initRecyclerView();
         requestModel();
     }
 
     private void initDataBinding() {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        mBinding.rvSample.setLayoutManager(new GridLayoutManager(MainActivity.this, 3));
+    }
+    private void initRecyclerView(){
+        mBinding.rvSample.setLayoutManager(new GridLayoutManager(MainActivity.this, 3, LinearLayoutManager.VERTICAL,false));
+        mBinding.rvSample.addItemDecoration(new GridSpacingItemDecoration(3,20,true));
     }
 
-    private SampleAdapter setAdapter(List<BaseModel> modelList) {
+    private void setAdapter(List<BaseModel> modelList) {
         if (mAdapter == null) {
             mAdapter = new SampleAdapter(modelList);
         } else {
             mAdapter.changeModels(modelList);
         }
-        return mAdapter;
+        mBinding.rvSample.setAdapter(mAdapter);
     }
 
     private FormBody makeFormBody(String key, String value) {
