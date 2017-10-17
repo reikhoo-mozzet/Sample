@@ -8,39 +8,71 @@ import android.support.v7.widget.GridLayoutManager;
 import com.mozzet.sample.databinding.ActivityMainBinding;
 import com.mozzet.sample.model.BaseModel;
 import com.mozzet.sample.model.TypeAModel;
+import com.mozzet.sample.model.network.Card;
+import com.mozzet.sample.model.network.NetworkResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
+import okhttp3.FormBody;
+
 public class MainActivity extends Activity {
     private ActivityMainBinding mBinding;
+    private SampleAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initDataBinding();
+        requestModel();
     }
 
     private void initDataBinding() {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mBinding.rvSample.setLayoutManager(new GridLayoutManager(MainActivity.this, 3));
-        mBinding.rvSample.setAdapter(makeAdapter());
     }
 
-    private SampleAdapter makeAdapter() {
-        return new SampleAdapter(makeDummy());
+    private SampleAdapter setAdapter(List<BaseModel> modelList) {
+        if (mAdapter == null) {
+            mAdapter = new SampleAdapter(modelList);
+        } else {
+            mAdapter.changeModels(modelList);
+        }
+        return mAdapter;
     }
 
-    public List<BaseModel> makeDummy() {
-        List<BaseModel> list = new ArrayList<>();
-        String imageUrl = "https://i.ytimg.com/vi/-QmtkGqxo-Q/hqdefault.jpg";
-        list.add(new TypeAModel("Lake", imageUrl));
-        list.add(new TypeAModel("Lake", imageUrl));
-        list.add(new TypeAModel("Lake", imageUrl));
-        list.add(new TypeAModel("Lake", imageUrl));
-        list.add(new TypeAModel("Lake", imageUrl));
-        list.add(new TypeAModel("Lake", imageUrl));
-        return list;
+    private FormBody makeFormBody(String key, String value) {
+        return new FormBody.Builder().add(key, value).build();
     }
+
+    private void requestModel() {
+        NetworkModule.getInstance()
+                .post(SecretData.SAMPLE_URL, makeFormBody(SecretData.TOKEN_KEY, SecretData.TOKEN)
+                        , singleResponse -> {
+                            refineToBaseModels(singleResponse, MainActivity.this::setAdapter);
+                        });
+    }
+
+    private void refineToBaseModels(Single<NetworkResponse> response, Consumer<List<BaseModel>> consumer) {
+        response.map(MainActivity.this::refineNetworkResponseToCards)
+                .map(MainActivity.this::refineCardsToTypeAModels)
+                .subscribe(consumer);
+    }
+
+    private List<Card> refineNetworkResponseToCards(NetworkResponse response) {
+        return response.getData().getSections().get(0).getCards();
+    }
+
+    private List<BaseModel> refineCardsToTypeAModels(List<Card> cardList) {
+        List<BaseModel> baseModels = new ArrayList<>();
+        for (Card card : cardList) {
+            baseModels.add(new TypeAModel(card.getNickname(), card.getPhoto_url()));
+        }
+        return baseModels;
+    }
+
+
 }
