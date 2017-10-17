@@ -22,6 +22,10 @@ public class SampleAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         mModelList = modelList;
     }
 
+    public void changeModels(List<BaseModel> modelList){
+        mModelList=modelList;
+        notifyDataSetChanged();
+    }
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 //        if(viewType==TYPE_A)...
