@@ -37,6 +37,6 @@ public class TypeAViewHolder extends BaseViewHolder<TypeAModel> {
 
     @BindingAdapter({"bind:imageUrl"})
     public static void loadImage(ImageView view, String url) {
-        NetworkModule.getInstance().loadImage(view, url);
+        NetworkModule.loadImage(view, url);
     }
 }
