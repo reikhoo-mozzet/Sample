@@ -13,21 +13,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.FormBody;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**
- * Created by reikhoo on 2017. 10. 16..
- */
-
 public class NetworkModule {
     private OkHttpClient mClient;
     private Gson mGson;
-    public static final MediaType JSON
-            = MediaType.parse("application/json; charset=utf-8");
-
 
     public static NetworkModule getInstance() {
         return LazyHolder.INSTANCE;
@@ -49,14 +41,12 @@ public class NetworkModule {
                 .post(body)
                 .build();
         Single.defer(() -> {
-            Response response = mClient.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                response.close();
-                throw new IOException(new IOException("Unexpected code " + response));
+            try (Response response = mClient.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    throw new IOException(new IOException("Unexpected code " + response));
+                }
+                return Single.just(response.body().string());
             }
-            String result = response.body().string();
-            response.close();
-            return Single.just(result);
         }).subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(NetworkModule.this::refineToNetworkResponse)
