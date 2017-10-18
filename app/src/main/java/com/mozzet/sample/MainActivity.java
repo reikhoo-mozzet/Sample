@@ -40,6 +40,8 @@ public class MainActivity extends Activity {
         requestModel();
         Log.e("main", "log");
         Toast.makeText(MainActivity.this,"wow",Toast.LENGTH_LONG).show();
+
+        Log.e("main", "log");
     }
 
     @Override
