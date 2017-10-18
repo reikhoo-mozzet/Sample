@@ -1,43 +1,28 @@
 package com.mozzet.sample.model.network;
 
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by reikhoo on 2017. 10. 17..
  */
 
 public class NetworkResponse {
-    private int ret_code;
+    @SerializedName("ret_code")
+    private int retCode;
+    @SerializedName("message")
     private String message;
+    @SerializedName("data")
     private Data data;
 
-    public int getRet_code() {
-        return ret_code;
-    }
-
-    public void setRet_code(int ret_code) {
-        this.ret_code = ret_code;
+    public int getRetCode() {
+        return retCode;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public Data getData() {
         return data;
     }
-
-    public void setData(Data data) {
-        this.data = data;
-    }
-
-
-
-
-
-
 }
