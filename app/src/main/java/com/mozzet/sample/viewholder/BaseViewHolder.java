@@ -5,10 +5,6 @@ import android.view.View;
 
 import com.mozzet.sample.model.BaseModel;
 
-/**
- * Created by reikhoo on 2017. 10. 16..
- */
-
 public abstract class BaseViewHolder<T extends BaseModel> extends RecyclerView.ViewHolder {
 
     public BaseViewHolder(View itemView) {

@@ -2,10 +2,6 @@ package com.mozzet.sample.model;
 
 import com.mozzet.sample.SampleAdapter;
 
-/**
- * Created by reikhoo on 2017. 10. 16..
- */
-
 public class TypeAModel extends BaseModel {
 
     private String userName;

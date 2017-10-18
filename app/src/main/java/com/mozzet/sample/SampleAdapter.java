@@ -10,10 +10,6 @@ import com.mozzet.sample.viewholder.TypeAViewHolder;
 
 import java.util.List;
 
-/**
- * Created by reikhoo on 2017. 10. 16..
- */
-
 public class SampleAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     public static final int TYPE_A = 1;
     private List<BaseModel> mModelList;
@@ -22,10 +18,11 @@ public class SampleAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         mModelList = modelList;
     }
 
-    public void changeModels(List<BaseModel> modelList){
-        mModelList=modelList;
+    public void changeModels(List<BaseModel> modelList) {
+        mModelList = modelList;
         notifyDataSetChanged();
     }
+
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 //        if(viewType==TYPE_A)...
