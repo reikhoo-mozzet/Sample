@@ -42,6 +42,7 @@ public class MainActivity extends Activity {
         Toast.makeText(MainActivity.this,"wow",Toast.LENGTH_LONG).show();
         Toast.makeText(MainActivity.this,"poo",Toast.LENGTH_LONG).show();
         Toast.makeText(MainActivity.this,"log2",Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this,"hotfix",Toast.LENGTH_LONG).show();
     }
 
     @Override
