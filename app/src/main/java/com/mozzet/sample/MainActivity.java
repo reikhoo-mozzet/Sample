@@ -45,6 +45,7 @@ public class MainActivity extends Activity {
         Toast.makeText(MainActivity.this,"hotfix",Toast.LENGTH_LONG).show();
         Toast.makeText(MainActivity.this,"hotfix",Toast.LENGTH_LONG).show();
         Toast.makeText(MainActivity.this,"test1",Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this,"test2",Toast.LENGTH_LONG).show();
     }
 
     @Override
